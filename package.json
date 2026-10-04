@@ -1,14 +1,14 @@
 {
   "name": "blog-api-week9",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Blog API project for Week 9",
+  "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js",
     "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No tests specified\" && exit 0"
   },
-  "keywords": [],
+  "keywords": ["blog", "api", "express", "mongoose"],
   "author": "",
   "license": "ISC",
   "type": "commonjs",

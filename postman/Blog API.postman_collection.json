@@ -1,0 +1,235 @@
+{
+  "info": {
+    "name": "Blog API",
+    "description": "CRUD and validation tests for the articles API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "articleId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "List articles",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/articles"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('returns an array of articles', function () {",
+              "  pm.expect(pm.response.json()).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create article",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Postman test article\",\n  \"content\": \"This article was created by the Postman CRUD collection.\",\n  \"author\": \"Postman\",\n  \"published\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/articles"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 201', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "pm.test('returns the created article and saves its ID', function () {",
+              "  const article = pm.response.json();",
+              "  pm.expect(article).to.have.property('_id');",
+              "  pm.expect(article.title).to.eql('Postman test article');",
+              "  pm.collectionVariables.set('articleId', article._id);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get created article",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/articles/{{articleId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('returns the created article', function () {",
+              "  const article = pm.response.json();",
+              "  pm.expect(article._id).to.eql(pm.collectionVariables.get('articleId'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update article",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Updated Postman article\",\n  \"content\": \"This article was updated by the Postman CRUD collection.\",\n  \"author\": \"Postman\",\n  \"published\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/articles/{{articleId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('returns the updated article', function () {",
+              "  const article = pm.response.json();",
+              "  pm.expect(article.title).to.eql('Updated Postman article');",
+              "  pm.expect(article.published).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject invalid article",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Hi\",\n  \"content\": \"Too short\",\n  \"author\": \"P\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": "{{baseUrl}}/articles"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 400 for invalid input', function () {",
+              "  pm.response.to.have.status(400);",
+              "});",
+              "pm.test('includes a validation message', function () {",
+              "  pm.expect(pm.response.json()).to.have.property('message');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete article",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/articles/{{articleId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('confirms deletion', function () {",
+              "  pm.expect(pm.response.json().message).to.eql('Article deleted successfully');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Confirm deleted article is missing",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/articles/{{articleId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('returns 404 after deletion', function () {",
+              "  pm.response.to.have.status(404);",
+              "});",
+              "pm.test('reports that the article was not found', function () {",
+              "  pm.expect(pm.response.json().message).to.eql('Article not found');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
