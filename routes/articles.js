@@ -2,6 +2,7 @@ const express = require('express');
 const Joi = require('joi');
 
 const Article = require('../models/Articles');
+const authenticate = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -35,7 +36,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authenticate, async (req, res) => {
   try {
     const { error, value } = articleSchema.validate(req.body);
 
@@ -50,7 +51,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticate, async (req, res) => {
   try {
     const { error, value } = articleSchema.validate(req.body);
 
@@ -73,7 +74,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticate, async (req, res) => {
   try {
     const article = await Article.findByIdAndDelete(req.params.id);
 

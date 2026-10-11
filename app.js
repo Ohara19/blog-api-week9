@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const articlesRoutes = require('./routes/articles');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +15,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'Blog API is running!' });
 });
 
+app.use('/auth', authRoutes);
 app.use('/articles', articlesRoutes);
 
 const connectDB = async () => {
